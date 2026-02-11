@@ -43,7 +43,7 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'role' => ['required', Rule::in(['admin', 'petugas', 'peminjam'])],
-            'phone' => ['nullable', 'string', 'max:30'],
+            'phone' => ['nullable', 'regex:/^[0-9]+$/', 'max:30'],
             'password' => ['required', 'string', 'min:6'],
         ]);
 
@@ -66,7 +66,7 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
             'role' => ['required', Rule::in(['admin', 'petugas', 'peminjam'])],
-            'phone' => ['nullable', 'string', 'max:30'],
+            'phone' => ['nullable', 'regex:/^[0-9]+$/', 'max:30'],
             'password' => ['nullable', 'string', 'min:6'],
         ]);
 
@@ -94,3 +94,4 @@ class UserController extends Controller
         return redirect()->route('admin.users.index')->with('success', 'Data pengguna berhasil dihapus.');
     }
 }
+

@@ -16,7 +16,7 @@
                         <option value="peminjam" @selected(old('role', 'peminjam') === 'peminjam')>Peminjam</option>
                     </select>
                 </div>
-                <div><label>No HP</label><input type="text" name="phone" value="{{ old('phone') }}"></div>
+                <div><label>No HP</label><input type="text" name="phone" value="{{ old('phone') }}" inputmode="numeric" pattern="[0-9]*" data-phone-only></div>
             </div>
             <div><label>Password</label><input type="password" name="password" required></div>
             <div class="actions">
@@ -26,3 +26,4 @@
         </form>
     </div>
 @endsection
+

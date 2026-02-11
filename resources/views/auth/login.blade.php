@@ -150,6 +150,14 @@
             border-top: 1px solid var(--line);
             padding-top: 14px;
         }
+        .login-note a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+        }
+        .login-note a:hover {
+            text-decoration: underline;
+        }
         @media (max-width: 900px) {
             .login-shell {
                 grid-template-columns: 1fr;
@@ -232,7 +240,11 @@
                     <button type="submit" class="btn-login">Login</button>
                 </form>
 
-                <p class="muted login-note">Contoh akun default tersedia setelah seeding database.</p>
+                <p class="muted login-note">
+                    Belum punya akun?
+                    <a href="{{ route('register') }}">Daftar sekarang</a>.
+                    Contoh akun default tersedia setelah seeding database.
+                </p>
             </div>
         </section>
     </div>

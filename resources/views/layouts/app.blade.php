@@ -285,6 +285,132 @@
         .confirm-actions .btn {
             min-width: 92px;
         }
+        .success-overlay[hidden],
+        .success-dialog[hidden] {
+            display: none !important;
+        }
+        .success-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.7);
+            backdrop-filter: blur(3px);
+            z-index: 1100;
+            opacity: 0;
+            animation: fade-in 0.24s ease forwards;
+        }
+        .success-dialog {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.96);
+            width: min(520px, 92vw);
+            border-radius: 20px;
+            border: 1px solid color-mix(in oklab, var(--line) 64%, #34d399);
+            background:
+                radial-gradient(circle at 8% -6%, rgba(52, 211, 153, 0.22), transparent 42%),
+                radial-gradient(circle at 100% 106%, rgba(45, 212, 191, 0.18), transparent 47%),
+                var(--card);
+            box-shadow: 0 26px 54px rgba(2, 6, 23, 0.42);
+            z-index: 1101;
+            overflow: hidden;
+            animation: dialog-in 0.28s ease forwards;
+        }
+        .success-top {
+            padding: 28px 24px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .success-icon {
+            width: 66px;
+            height: 66px;
+            border-radius: 18px;
+            border: 1px solid color-mix(in oklab, var(--line) 60%, #34d399);
+            display: grid;
+            place-items: center;
+            background: linear-gradient(145deg, rgba(16, 185, 129, 0.2), rgba(20, 184, 166, 0.15));
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.35);
+        }
+        .success-icon svg {
+            width: 34px;
+            height: 34px;
+            stroke: #10b981;
+        }
+        .success-close {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            border: 1px solid var(--line);
+            background: transparent;
+            color: var(--muted);
+            cursor: pointer;
+            padding: 0;
+            font-size: 19px;
+            line-height: 1;
+        }
+        .success-close:hover {
+            color: var(--text);
+            border-color: color-mix(in oklab, var(--line) 60%, var(--text));
+        }
+        .success-body {
+            padding: 0 24px 22px;
+        }
+        .success-title {
+            margin: 0;
+            font-size: clamp(24px, 3vw, 30px);
+            line-height: 1.2;
+        }
+        .success-message {
+            margin: 10px 0 0;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+        .success-progress-wrap {
+            padding: 0 24px 18px;
+        }
+        .success-progress {
+            width: 100%;
+            height: 6px;
+            border-radius: 999px;
+            border: 1px solid var(--line);
+            overflow: hidden;
+            background: color-mix(in oklab, var(--bg) 70%, var(--card));
+        }
+        .success-progress-bar {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #14b8a6, #22c55e);
+            transform-origin: left center;
+        }
+        .success-actions {
+            display: flex;
+            justify-content: flex-end;
+            padding: 0 24px 24px;
+        }
+        .success-action-btn {
+            min-width: 136px;
+            font-weight: 700;
+        }
+        .success-burst {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            opacity: 0;
+            pointer-events: none;
+            animation: burst 0.9s ease forwards;
+        }
+        @keyframes fade-in {
+            to { opacity: 1; }
+        }
+        @keyframes dialog-in {
+            to { transform: translate(-50%, -50%) scale(1); }
+        }
+        @keyframes burst {
+            0% { opacity: 0.9; transform: translate(0, 0) scale(0.6); }
+            100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(1.3); }
+        }
         @media (max-width: 980px) {
             .app-shell {
                 grid-template-columns: 1fr;
@@ -390,7 +516,7 @@
     </aside>
     <main class="main">
         <div class="container">
-            @if(session('success'))
+            @if(session('success') && !session('register_popup'))
                 <div class="alert alert-success">{{ session('success') }}</div>
             @endif
             @if(session('error'))
@@ -421,7 +547,7 @@
     </div>
 </div>
 <div class="container">
-    @if(session('success'))
+    @if(session('success') && !session('register_popup'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
     @if(session('error'))
@@ -447,6 +573,29 @@
     <div class="confirm-actions">
         <button type="button" id="confirm-cancel" class="btn btn-secondary">Batal</button>
         <button type="button" id="confirm-ok" class="btn btn-danger">Ya, Hapus</button>
+    </div>
+</div>
+<div id="success-overlay" class="success-overlay" hidden></div>
+<div id="success-dialog" class="success-dialog" role="dialog" aria-modal="true" aria-labelledby="success-title" hidden>
+    <div class="success-top">
+        <div class="success-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m5 13 4 4L19 7"></path>
+            </svg>
+        </div>
+        <button type="button" id="success-close" class="success-close" aria-label="Tutup popup">&times;</button>
+    </div>
+    <div class="success-body">
+        <h3 id="success-title" class="success-title"></h3>
+        <p id="success-message" class="success-message"></p>
+    </div>
+    <div class="success-progress-wrap">
+        <div class="success-progress">
+            <div id="success-progress-bar" class="success-progress-bar"></div>
+        </div>
+    </div>
+    <div class="success-actions">
+        <button type="button" id="success-ok" class="btn btn-success success-action-btn">Lanjut ke Dashboard</button>
     </div>
 </div>
 <script>
@@ -519,6 +668,98 @@
             closeDialog();
         });
     })();
+
+    (function () {
+        document.addEventListener('submit', (event) => {
+            const form = event.target;
+            if (!(form instanceof HTMLFormElement)) return;
+
+            const phoneInputs = form.querySelectorAll('input[data-phone-only]');
+            for (const input of phoneInputs) {
+                const value = input.value.trim();
+                if (value === '') continue;
+
+                if (!/^\d+$/.test(value)) {
+                    event.preventDefault();
+                    alert('Nomor telepon hanya boleh berisi angka.');
+                    input.focus();
+                    return;
+                }
+            }
+        }, true);
+    })();
+
+    (function () {
+        const popupData = @json(session('register_popup'));
+        if (!popupData) return;
+
+        const overlay = document.getElementById('success-overlay');
+        const dialog = document.getElementById('success-dialog');
+        const title = document.getElementById('success-title');
+        const message = document.getElementById('success-message');
+        const closeBtn = document.getElementById('success-close');
+        const okBtn = document.getElementById('success-ok');
+        const progressBar = document.getElementById('success-progress-bar');
+        if (!overlay || !dialog || !title || !message || !closeBtn || !okBtn || !progressBar) return;
+
+        title.textContent = popupData.title || 'Berhasil';
+        message.textContent = popupData.message || 'Aksi berhasil diproses.';
+
+        overlay.hidden = false;
+        dialog.hidden = false;
+
+        const colors = ['#10b981', '#14b8a6', '#22c55e', '#34d399', '#2dd4bf'];
+        for (let i = 0; i < 20; i += 1) {
+            const piece = document.createElement('span');
+            piece.className = 'success-burst';
+            piece.style.left = `${45 + Math.random() * 10}%`;
+            piece.style.top = `${24 + Math.random() * 12}%`;
+            piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+            piece.style.setProperty('--tx', `${(Math.random() - 0.5) * 240}px`);
+            piece.style.setProperty('--ty', `${(Math.random() - 0.5) * 180}px`);
+            piece.style.animationDelay = `${Math.random() * 0.14}s`;
+            dialog.appendChild(piece);
+            setTimeout(() => piece.remove(), 1000);
+        }
+
+        let closed = false;
+        let startTime = null;
+        const duration = 6200;
+        let frameId = null;
+
+        const closePopup = () => {
+            if (closed) return;
+            closed = true;
+            overlay.hidden = true;
+            dialog.hidden = true;
+            if (frameId) {
+                cancelAnimationFrame(frameId);
+            }
+        };
+
+        const tick = (ts) => {
+            if (closed) return;
+            if (!startTime) startTime = ts;
+            const elapsed = ts - startTime;
+            const progress = Math.max(0, 1 - (elapsed / duration));
+            progressBar.style.transform = `scaleX(${progress})`;
+            if (elapsed >= duration) {
+                closePopup();
+                return;
+            }
+            frameId = requestAnimationFrame(tick);
+        };
+        frameId = requestAnimationFrame(tick);
+
+        closeBtn.addEventListener('click', closePopup);
+        okBtn.addEventListener('click', closePopup);
+        overlay.addEventListener('click', closePopup);
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && !dialog.hidden) closePopup();
+        });
+    })();
 </script>
 </body>
 </html>
+
+
