@@ -7,6 +7,7 @@ use App\Support\ActivityLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
 class AuthController extends Controller
@@ -36,7 +37,15 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        if (!Auth::attempt($credentials, $request->boolean('remember'))) {
+        $remember = $request->boolean('remember');
+
+        // Backward compatibility for legacy plaintext passwords in old records.
+        $user = User::where('email', $credentials['email'])->first();
+        if ($user && !Hash::isHashed($user->password) && hash_equals($user->password, $credentials['password'])) {
+            $user->password = Hash::make($credentials['password']);
+            $user->save();
+            Auth::login($user, $remember);
+        } elseif (!Auth::attempt($credentials, $remember)) {
             return back()->withErrors([
                 'email' => 'Email atau password tidak valid.',
             ])->onlyInput('email');
@@ -89,4 +98,3 @@ class AuthController extends Controller
         return redirect()->route('login')->with('success', 'Logout berhasil.');
     }
 }
-

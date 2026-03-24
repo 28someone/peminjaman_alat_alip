@@ -15,9 +15,12 @@
                     @endforeach
                 </select>
             </div>
-            <div class="actions" style="align-items: end;"><button type="submit">Tampilkan</button></div>
+            <div class="actions" style="align-items: end; gap: 8px;">
+                <button type="submit">Tampilkan</button>
+                <a href="{{ route('petugas.reports.export', request()->query()) }}" class="btn btn-secondary">Export Excel</a>
+            </div>
         </form>
-        <p class="muted">Gunakan Ctrl+P untuk mencetak halaman ini sebagai laporan.</p>
+        <p class="muted">Klik Export Excel untuk mengunduh laporan sesuai filter.</p>
         <div class="table-wrap">
             <table>
                 <thead><tr><th>Kode</th><th>Peminjam</th><th>Alat</th><th>Tgl Pinjam</th><th>Jatuh Tempo</th><th>Status</th></tr></thead>

@@ -46,6 +46,7 @@ Route::middleware('auth')->group(function (): void {
         Route::post('/approvals/{loan}/reject-return', [ApprovalController::class, 'rejectReturn'])->name('approvals.reject-return');
         Route::get('/returns', [ApprovalController::class, 'monitorReturns'])->name('returns.index');
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
     });
 
     Route::prefix('peminjam')->name('peminjam.')->middleware('role:peminjam')->group(function (): void {

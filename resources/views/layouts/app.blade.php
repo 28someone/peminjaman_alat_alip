@@ -453,9 +453,19 @@
             <span class="switch" aria-hidden="true"></span>
         </button>
         <nav class="sidebar-nav">
-            <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
+            @php
+                $homeRoute = match (auth()->user()->role) {
+                    'admin' => 'admin.users.index',
+                    'petugas' => 'petugas.approvals.index',
+                    default => 'peminjam.catalog.index',
+                };
+                $homeActive = (auth()->user()->role === 'admin' && request()->routeIs('admin.users.*'))
+                    || (auth()->user()->role === 'petugas' && request()->routeIs('petugas.approvals.*'))
+                    || (auth()->user()->role === 'peminjam' && request()->routeIs('peminjam.catalog.*'));
+            @endphp
+            <a href="{{ route($homeRoute) }}" class="{{ $homeActive ? 'active' : '' }}">
                 <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 13h8V3H3z"></path><path d="M13 21h8v-8h-8z"></path><path d="M13 3h8v6h-8z"></path><path d="M3 21h8v-6H3z"></path></svg>
-                Dashboard
+                Beranda
             </a>
             @if(auth()->user()->role === 'admin')
                 <a href="{{ route('admin.users.index') }}" class="{{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
@@ -595,7 +605,7 @@
         </div>
     </div>
     <div class="success-actions">
-        <button type="button" id="success-ok" class="btn btn-success success-action-btn">Lanjut ke Dashboard</button>
+        <button type="button" id="success-ok" class="btn btn-success success-action-btn">Lanjut</button>
     </div>
 </div>
 <script>
@@ -761,5 +771,6 @@
 </script>
 </body>
 </html>
+
 
 
